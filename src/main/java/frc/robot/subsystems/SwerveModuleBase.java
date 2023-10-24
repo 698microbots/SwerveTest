@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.CAN;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -50,6 +51,8 @@ public class SwerveModuleBase extends SubsystemBase {
 
     turningPidController = new PIDController(Constants.kPTurning, 0, 0);
     turningPidController.enableContinuousInput(-Math.PI, Math.PI);
+
+    resetEncoders();
   }
 
   public double getDrivePosition(){
@@ -71,6 +74,7 @@ public class SwerveModuleBase extends SubsystemBase {
   public double getAbsoluteEncoderRad(){
     double angle = absoluteEncoder.getVoltage() / RobotController.getVoltage5V();
     angle = angle * 2.0 * Math.PI;
+    angle -= absoluteEncoderOffsetRad;
     if (absoluteEncoderReversed){
       return angle * -1;
     } else {
