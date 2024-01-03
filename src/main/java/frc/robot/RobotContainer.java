@@ -7,9 +7,15 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ResetHeading;
+import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -21,7 +27,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final XboxController xboxController = new XboxController(Constants.kDriverControllerPort);
+  private final DriveTrain driveTrain = new DriveTrain();
 
+  private final JoystickButton buttonA = new JoystickButton(xboxController, Constants.kButtonA);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -29,6 +38,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+    driveTrain.setDefaultCommand(new SwerveJoystickCmd(
+    driveTrain, 
+    () -> -xboxController.getRawAxis(Constants.kLeftYAxis), 
+    () -> xboxController.getRawAxis(Constants.kLeftXAxis), 
+    () -> xboxController.getRawAxis(Constants.kRightXAxis), 
+    () -> !xboxController.getAButton())); //default operate in field reference frame
     configureBindings();
   }
 
@@ -49,6 +64,8 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    // buttonA.whenHeld(new ResetHeading(driveTrain));
+    new JoystickButton(xboxController, Constants.kButtonA).whenPressed(() -> driveTrain.zeroHeading()); //executes and IMMEDIATELY finishes unlike the other command
   }
 
   /**
