@@ -103,7 +103,12 @@ public class DriveTrain extends SubsystemBase {
     
   }
 
-
+  public void setModuleAngleToZero() { // sets and angle to 0
+    frontLeft.resetEncoders();
+    frontRight.resetEncoders();
+    backLeft.resetEncoders();
+    backRight.resetEncoders();
+  }
 
 
 
